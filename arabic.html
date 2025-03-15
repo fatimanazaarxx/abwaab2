@@ -66,7 +66,7 @@
             document.getElementById("startButton").style.display = "none";
         }
 
-        // Detect "PrintScreen" key press for laptops/PCs
+        // Detect "PrintScreen" key press
         document.addEventListener("keyup", function (e) {
             if (e.key === "PrintScreen") {
                 // Show the black screen and hide content
@@ -83,26 +83,15 @@
             document.getElementById("examFrame").style.display = "none";
         }
 
-        // Mobile-specific detection using visibilitychange
-        document.addEventListener("visibilitychange", function() {
-            if (document.hidden) {
-                // When the page becomes hidden (e.g., user switches to another app)
-                showCheatScreen();
-                sessionStorage.setItem("cheated", "true");
-            }
-        });
+        document.addEventListener("keydown", function (e) {
+    if (e.key === "PrintScreen") {
+        document.body.style.opacity = 0.1;  // تقليل الشفافية
+        setTimeout(function() {
+            document.body.style.opacity = 1;  // إعادة الشفافية بعد 2 ثانية
+        }, 2000);
+    }
+});
 
-        // Check for sessionStorage on load to show the cheat screen if needed
-        window.onload = function() {
-            if (sessionStorage.getItem("cheated") === "true") {
-                showCheatScreen();
-            }
-        };
-
-        // Listen for page unload and reset the sessionStorage when the user navigates away
-        window.onbeforeunload = function () {
-            sessionStorage.removeItem("cheated");
-        };
     </script>
 </head>
 <body>
