@@ -66,11 +66,13 @@
             document.getElementById("startButton").style.display = "none";
         }
 
-        // Detect "PrintScreen" key press
+        // Detect "PrintScreen" key press for laptops/PCs
         document.addEventListener("keyup", function (e) {
             if (e.key === "PrintScreen") {
                 // Show the black screen and hide content
                 showCheatScreen();
+                // Save the cheat attempt in sessionStorage
+                sessionStorage.setItem("cheated", "true");
             }
         });
 
@@ -81,11 +83,26 @@
             document.getElementById("examFrame").style.display = "none";
         }
 
-        // Listen for page unload and reload
-        window.onbeforeunload = function () {
-            // You could trigger a reset or other action if needed here
+        // Mobile-specific detection using visibilitychange
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                // When the page becomes hidden (e.g., user switches to another app)
+                showCheatScreen();
+                sessionStorage.setItem("cheated", "true");
+            }
+        });
+
+        // Check for sessionStorage on load to show the cheat screen if needed
+        window.onload = function() {
+            if (sessionStorage.getItem("cheated") === "true") {
+                showCheatScreen();
+            }
         };
 
+        // Listen for page unload and reset the sessionStorage when the user navigates away
+        window.onbeforeunload = function () {
+            sessionStorage.removeItem("cheated");
+        };
     </script>
 </head>
 <body>
