@@ -7,9 +7,6 @@
     <style>
         body {
             user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             overflow: hidden;
             background-color: white;
             transition: background-color 1s ease;
@@ -64,74 +61,21 @@
             font-weight: bold;
             color: red;
         }
+
+        #passwordPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            z-index: 99999;
+            text-align: center;
+        }
     </style>
-    <script>
-        function showForm() {
-            const examFrame = document.getElementById("examFrame");
-            const startButton = document.getElementById("startButton");
-            const timerElement = document.getElementById("timer");
-    
-            examFrame.style.display = "block";
-            startButton.style.display = "none";
-            timerElement.style.display = "block";
-    
-            startCountdown(2); // رجعته 5 دقائق
-        }
-    
-        function startCountdown(minutes) {
-            let time = minutes * 60;
-            const timerElement = document.getElementById("timer");
-            let warned = false;
-    
-            const countdown = setInterval(() => {
-                let m = Math.floor(time / 60).toString().padStart(2, '0');
-                let s = (time % 60).toString().padStart(2, '0');
-                timerElement.textContent = `الوقت المتبقي: ${m}:${s}`;
-    
-                // 🔔 تنبيه عند بقاء دقيقة
-                if (time === 60 && !warned) {
-                    alert("⚠️ تبقت دقيقة واحدة! الرجاء الضغط على زر الإرسال في الفورم قبل انتهاء الوقت.");
-                    warned = true;
-                }
-    
-                if (time <= 0) {
-                    clearInterval(countdown);
-                    showTimeoutScreen();
-                }
-    
-                time--;
-            }, 1000);
-        }
-    
-        function showTimeoutScreen() {
-            document.getElementById("timeoutScreen").style.display = "flex";
-            document.querySelector(".container").style.display = "none";
-            document.getElementById("examFrame").style.display = "none";
-        }
-    
-        function showCheatScreen() {
-            document.getElementById("cheatScreen").style.display = "flex";
-            document.querySelector(".container").style.display = "none";
-            document.getElementById("examFrame").style.display = "none";
-        }
-    
-        document.addEventListener("keyup", function (e) {
-            if (e.key === "PrintScreen") {
-                showCheatScreen();
-                sessionStorage.setItem("cheated", "true");
-            }
-        });
-    
-        document.addEventListener("keydown", function (e) {
-            if (e.key === "PrintScreen") {
-                document.body.style.opacity = 0.1;
-                setTimeout(function () {
-                    document.body.style.opacity = 1;
-                }, 2000);
-            }
-        });
-    </script>
-    
 </head>
 <body>
 
@@ -139,7 +83,7 @@
         <h1>امتحان اللغة العربية</h1>
         <div id="timer" style="display: none;"></div>
         <p>اضغط على الزر أدناه لبدء الامتحان.</p>
-        <button id="startButton" class="start-button" onclick="showForm()">ابدأ الامتحان</button>
+        <button id="startButton" class="start-button" onclick="showPasswordPopup()">ابدأ الامتحان</button>
         <iframe id="examFrame" src="https://forms.gle/NAHFEfZ9BNvipHVs8" allowfullscreen></iframe>
     </div>
 
@@ -151,5 +95,92 @@
         <div>⏰ انتهى الوقت! الرجاء تسليم الامتحان.</div>
     </div>
 
+    <!-- Password Popup -->
+    <div id="passwordPopup">
+        <h3>أدخل كلمة المرور للبدء</h3>
+        <input type="password" id="passwordInput" placeholder="Password" style="padding: 10px; font-size: 16px; margin-top: 10px;">
+        <br><br>
+        <button onclick="checkPassword()" style="padding: 10px 20px; font-size: 16px; background-color: blue; color: white; border: none; border-radius: 5px;">دخول</button>
+    </div>
+
+    <script>
+        function showForm() {
+            const examFrame = document.getElementById("examFrame");
+            const startButton = document.getElementById("startButton");
+            const timerElement = document.getElementById("timer");
+
+            examFrame.style.display = "block";
+            startButton.style.display = "none";
+            timerElement.style.display = "block";
+
+            startCountdown(2);
+        }
+
+        function startCountdown(minutes) {
+            let time = minutes * 60;
+            const timerElement = document.getElementById("timer");
+            let warned = false;
+
+            const countdown = setInterval(() => {
+                let m = Math.floor(time / 60).toString().padStart(2, '0');
+                let s = (time % 60).toString().padStart(2, '0');
+                timerElement.textContent = `الوقت المتبقي: ${m}:${s}`;
+
+                if (time === 60 && !warned) {
+                    alert("⚠️ تبقت دقيقة واحدة! الرجاء الضغط على زر الإرسال في الفورم قبل انتهاء الوقت.");
+                    warned = true;
+                }
+
+                if (time <= 0) {
+                    clearInterval(countdown);
+                    showTimeoutScreen();
+                }
+
+                time--;
+            }, 1000);
+        }
+
+        function showTimeoutScreen() {
+            document.getElementById("timeoutScreen").style.display = "flex";
+            document.querySelector(".container").style.display = "none";
+            document.getElementById("examFrame").style.display = "none";
+        }
+
+        function showCheatScreen() {
+            document.getElementById("cheatScreen").style.display = "flex";
+            document.querySelector(".container").style.display = "none";
+            document.getElementById("examFrame").style.display = "none";
+        }
+
+        document.addEventListener("keyup", function (e) {
+            if (e.key === "PrintScreen") {
+                showCheatScreen();
+                sessionStorage.setItem("cheated", "true");
+            }
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "PrintScreen") {
+                document.body.style.opacity = 0.1;
+                setTimeout(function () {
+                    document.body.style.opacity = 1;
+                }, 2000);
+            }
+        });
+
+        function showPasswordPopup() {
+            document.getElementById("passwordPopup").style.display = "block";
+        }
+
+        function checkPassword() {
+            const enteredPassword = document.getElementById("passwordInput").value;
+            if (enteredPassword === "AbwaabTest") {
+                document.getElementById("passwordPopup").style.display = "none";
+                showForm();
+            } else {
+                alert("❌ كلمة المرور خاطئة!");
+            }
+        }
+    </script>
 </body>
 </html>
